@@ -141,11 +141,10 @@ section {
 
     border-radius: 50%;
 
-    background: #111;
-
     border: 2px solid #444;
 
-    margin: auto;
+    object-fit: cover;
+
 }
 
 /* Footer */
