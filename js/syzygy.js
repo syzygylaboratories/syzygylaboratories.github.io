@@ -91,7 +91,7 @@ function animate() {
     nodes.forEach(n => {
         ctx.beginPath();
         ctx.arc(n.x, n.y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = "#aaa";
+        ctx.fillStyle = "#666";
         ctx.fill();
     });
 
