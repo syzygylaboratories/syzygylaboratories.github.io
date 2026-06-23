@@ -1,4 +1,4 @@
-function startParticleGrid() {
+function startHeatmapField() {
 
     const canvas = document.getElementById("syzygy");
     const ctx = canvas.getContext("2d");
@@ -11,9 +11,10 @@ function startParticleGrid() {
         mouse.y = e.clientY - rect.top;
     });
 
-    let particles = [];
+    let grid = [];
 
     function resize() {
+
         const dpr = window.devicePixelRatio || 1;
 
         canvas.width = canvas.offsetWidth * dpr;
@@ -21,14 +22,14 @@ function startParticleGrid() {
 
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-        initParticles();
+        initGrid();
     }
 
-    function initParticles() {
+    function initGrid() {
 
-        particles = [];
+        grid = [];
 
-        const spacing = 40;
+        const spacing = 18; // tighter = smoother field
 
         const cols = Math.floor(canvas.offsetWidth / spacing);
         const rows = Math.floor(canvas.offsetHeight / spacing);
@@ -36,27 +37,16 @@ function startParticleGrid() {
         for (let y = 0; y < rows; y++) {
             for (let x = 0; x < cols; x++) {
 
-                particles.push({
+                grid.push({
                     x: x * spacing,
                     y: y * spacing,
                     ox: x * spacing,
                     oy: y * spacing,
-                    intensity: 0
+                    v: 0
                 });
 
             }
         }
-    }
-
-    function getColor(intensity) {
-        // intensity: 0 → 1
-        // white → cyan-ish highlight (subtle SYZYGY style)
-
-        const r = Math.floor(255 * (1 - intensity * 0.3));
-        const g = Math.floor(255 * (1 - intensity * 0.1));
-        const b = 255;
-
-        return `rgb(${r},${g},${b})`;
     }
 
     function animate() {
@@ -64,36 +54,40 @@ function startParticleGrid() {
         const w = canvas.offsetWidth;
         const h = canvas.offsetHeight;
 
-        ctx.clearRect(0, 0, w, h);
+        // instead of clearing fully → fade previous frame (key for heatmap feel)
+        ctx.fillStyle = "rgba(0,0,0,0.15)";
+        ctx.fillRect(0, 0, w, h);
 
-        for (let p of particles) {
+        for (let p of grid) {
 
             const dx = p.x - mouse.x;
             const dy = p.y - mouse.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
 
-            const forceRadius = 140;
+            const radius = 140;
 
-            // compute interaction intensity (0–1)
-            let intensity = Math.max(0, 1 - dist / forceRadius);
+            let influence = Math.max(0, 1 - dist / radius);
 
-            p.intensity = intensity;
+            // smooth return to origin
+            p.x += (p.ox - p.x) * 0.08;
+            p.y += (p.oy - p.y) * 0.08;
 
-            if (dist < forceRadius) {
+            // slight displacement from field
+            p.x += dx * influence * 0.08;
+            p.y += dy * influence * 0.08;
 
-                p.x += dx * intensity * 0.15;
-                p.y += dy * intensity * 0.15;
+            // colour intensity mapping
+            const alpha = influence;
+            const size = 1 + influence * 3;
 
-            } else {
+            // heat colour (white → cyan → subtle blue)
+            const r = 255 - influence * 80;
+            const g = 255 - influence * 30;
+            const b = 255;
 
-                p.x += (p.ox - p.x) * 0.05;
-                p.y += (p.oy - p.y) * 0.05;
-            }
-
-            // draw particle with colour based on intensity
             ctx.beginPath();
-            ctx.arc(p.x, p.y, 2 + intensity * 2, 0, Math.PI * 2);
-            ctx.fillStyle = getColor(intensity);
+            ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+            ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
             ctx.fill();
         }
 
@@ -106,4 +100,4 @@ function startParticleGrid() {
     animate();
 }
 
-startParticleGrid();
+startHeatmapField();
