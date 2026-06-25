@@ -297,3 +297,13 @@ p {
     background: #fff;
     color: #000;
 }
+
+.modal-content {
+    border: 1px solid #333;
+}
+
+.modal-body img {
+    object-fit: cover;
+    width: 100%;
+    height: auto;
+}
