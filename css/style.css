@@ -307,3 +307,37 @@ p {
     width: 100%;
     height: auto;
 }
+
+
+
+#digitalCard {
+    position: relative;
+    overflow: hidden;
+}
+
+#digitalCard #dataPulseCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 1;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+
+.field-wrap {
+    width: 100%;
+    height: 140px;   /* small widget */
+    margin-bottom: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+#dataFieldCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: transparent;
+}
